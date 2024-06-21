@@ -32,7 +32,7 @@ SPELL_IMG = environ.get("SPELL_IMG", "https://te.legra.ph/file/15c1ad448dfe472a5
 # Admins, Channels & Users
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', ' -1002001862509'))
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '6467566398').split()]
-CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', ' -1002085230546').split()]
+CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1002151783803').split()]
 auth_users = [int(user) if id_pattern.search(user) else user for user in environ.get('AUTH_USERS', '').split()]
 AUTH_USERS = (auth_users + ADMINS) if auth_users else []
 
@@ -40,7 +40,7 @@ AUTH_USERS = (auth_users + ADMINS) if auth_users else []
 # if REQUEST_TO_JOIN_MODE is true then force subscribe work like request to join fsub, else if false then work like normal fsub.
 REQUEST_TO_JOIN_MODE = bool(environ.get('REQUEST_TO_JOIN_MODE', False)) # Set True Or False
 TRY_AGAIN_BTN = bool(environ.get('TRY_AGAIN_BTN', False)) # Set True Or False
-auth_channel = environ.get('AUTH_CHANNEL', '-1002085230546') # give your force subscribe channel id here else leave it blank
+auth_channel = environ.get('AUTH_CHANNEL', '-1002151783803') # give your force subscribe channel id here else leave it blank
 AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 reqst_channel = environ.get('REQST_CHANNEL_ID', '')
 REQST_CHANNEL = int(reqst_channel) if reqst_channel and id_pattern.search(reqst_channel) else None
@@ -68,7 +68,7 @@ OWNER_USERNAME = environ.get('OWNER_USERNAME', 'Deep2213k') # owner username wit
 # Links
 GRP_LNK = environ.get('GRP_LNK', 'https://t.me/movies6251')
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/Backup625')
-TUTORIAL = environ.get('TUTORIAL', 'https://t.me/How_To_Open_Linkl')
+TUTORIAL = environ.get('TUTORIAL', 'https://t.me/HOWTO615')
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'movies6251') # Support Chat Link Without https:// or @
 
 # True Or False

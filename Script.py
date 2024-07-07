@@ -215,8 +215,7 @@ Nᴀᴍᴇ - {}"""
 
 IMDb Data:
 
-मूवी का पोस्टर गलत भी हो सकता है❌
-कृपया नाम चेक करे ✅
+मूवी का पोस्टर गलत भी हो सकता है ❌ कृपया नाम चेक करे ✅
 
 <b>🏷 Title</b>: <a href={url}>{title}</a>
 🎭 Genres: {genres}
@@ -684,13 +683,13 @@ Also your tutorial will be Added Your Group..."""
     DEVELOPER_TXT = """
 special Thanks To ❤️ Developers -
 
--Dev 1 [Owner of this bot ]<a href='https://t.me/Deep2213k'>DP</a>
+-Dev 1 [Owner of this bot ]<a href='https://t.me/Deep2213k'>ᴅᴘ</a>
 
--Dev 2 <a href='https://t.me/Deep2213k'>DP</a>
+-Dev 2 <a href='https://t.me/Deep2213k'>ᴅᴘ</a>
 
--Dev 3 <a href='https://t.me/Backup625>DP Botz</a>
+-Dev 3 <a href='https://t.me/Moviesupdate41>ᴅᴘ Botz</a>
 
-- Dev 4 <a href='https://t.me/movies6251'>TEAM DP</a>
+- Dev 4 <a href='https://t.me/Ownersupport'>TEAM ᴅᴘ</a>
 """
 
     RENAME_TXT = """

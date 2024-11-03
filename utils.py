@@ -172,7 +172,6 @@ async def get_poster(query, bulk=False, id=False, file=None):
         'rating': str(movie.get("rating")),
         'url':f'https://www.imdb.com/title/tt{movieid}'
     }
-
 async def broadcast_messages(user_id, message):
     try:
         await message.copy(chat_id=user_id)

@@ -18,8 +18,8 @@ def is_enabled(value, default):
 
 # Bot information
 SESSION = environ.get('SESSION', 'TechVJBot')
-API_ID = int(environ.get('API_ID', ''))
-API_HASH = environ.get('API_HASH', '')
+API_ID = int(environ.get('API_ID', '24482734'))
+API_HASH = environ.get('API_HASH', '5ccf6a58166cc047a7eba01c5dbc930c')
 BOT_TOKEN = environ.get('BOT_TOKEN', "")
 
 
@@ -27,65 +27,65 @@ BOT_TOKEN = environ.get('BOT_TOKEN', "")
 CACHE_TIME = int(environ.get('CACHE_TIME', 1800))
 
 # This Pics Is For Start Message Picture, You Can Add Multiple By Giving One Space Between Each.
-PICS = (environ.get('PICS', 'https://graph.org/file/ce1723991756e48c35aa1.jpg')).split() #SAMPLE PIC
+PICS = (environ.get('PICS', 'https://graph.org/file/f4392434260076e0d93a6.jpg')).split() #SAMPLE PIC
 
 NOR_IMG = environ.get("NOR_IMG", "https://graph.org/file/b69af2db776e4e85d21ec.jpg")
-MELCOW_VID = environ.get("MELCOW_VID", "https://t.me/How_To_Open_Linkl")
+MELCOW_VID = environ.get("MELCOW_VID", "https://t.me/HEVCxMovies/258")
 SPELL_IMG = environ.get("SPELL_IMG", "https://te.legra.ph/file/15c1ad448dfe472a5cbb8.jpg")
 
 
 # Admins, Channels & Users
-LOG_CHANNEL = int(environ.get('LOG_CHANNEL', ''))
-ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '').split()]
+LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001891110437'))
+ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1790775725').split()]
 
 # This Is File Channel Where You Upload Your File Then Bot Automatically Save It In Database 
-CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '').split()]
+CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1001975622918').split()]
 auth_users = [int(user) if id_pattern.search(user) else user for user in environ.get('AUTH_USERS', '').split()]
 AUTH_USERS = (auth_users + ADMINS) if auth_users else []
 
 # auth_channel means force subscribe channel.
 # if REQUEST_TO_JOIN_MODE is true then force subscribe work like request to join fsub, else if false then work like normal fsub.
-REQUEST_TO_JOIN_MODE = bool(environ.get('REQUEST_TO_JOIN_MODE', False)) # Set True Or False
+REQUEST_TO_JOIN_MODE = bool(environ.get('REQUEST_TO_JOIN_MODE', True)) # Set True Or False
 TRY_AGAIN_BTN = bool(environ.get('TRY_AGAIN_BTN', False)) # Set True Or False (This try again button is only for request to join fsub not for normal fsub)
 
 # This Is Force Subscribe Channel, also known as Auth Channel 
-auth_channel = environ.get('AUTH_CHANNEL', '') # give your force subscribe channel id here else leave it blank
+auth_channel = environ.get('AUTH_CHANNEL', '-1001840046152') # give your force subscribe channel id here else leave it blank
 AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 
 # This Channel Is For When User Request File With command or hashtag like - /request or #request
-reqst_channel = environ.get('REQST_CHANNEL_ID', '')
+reqst_channel = environ.get('REQST_CHANNEL_ID', '-1002327525649')
 REQST_CHANNEL = int(reqst_channel) if reqst_channel and id_pattern.search(reqst_channel) else None
 
 # This Is Your Bot Support Group Id , Here Bot Will Not Give File Because This Is Support Group.
-support_chat_id = environ.get('SUPPORT_CHAT_ID', '')
+support_chat_id = environ.get('SUPPORT_CHAT_ID', '-1002141664257')
 SUPPORT_CHAT_ID = int(support_chat_id) if support_chat_id and id_pattern.search(support_chat_id) else None
 
 # This Channel Is For Index Request 
 INDEX_REQ_CHANNEL = int(environ.get('INDEX_REQ_CHANNEL', LOG_CHANNEL))
 
 # This Channel Is For /batch command file store.
-FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).split()]
+FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '-1002119359172')).split()]
 
 # This Channel Is For Delete Index File, Forward Your File In This Channel Which You Want To Delete Then Bot Automatically Delete That File From Database.
 DELETE_CHANNELS = [int(dch) if id_pattern.search(dch) else dch for dch in environ.get('DELETE_CHANNELS', '0').split()]
 
 
 # MongoDB information
-MULTIPLE_DATABASE = bool(environ.get('MULTIPLE_DATABASE', False)) # Set True or False
+MULTIPLE_DATABASE = bool(environ.get('MULTIPLE_DATABASE', True)) # Set True or False
 
-DATABASE_URI = environ.get('DATABASE_URI', "") # IF Multiple Database Is False Then Fill Only This Database Url.
-if MULTIPLE_DATABASE == False:
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Tn69Links:epiIlhWaO1B0FG71@cluster0.ldwpogq.mongodb.net/?retryWrites=true&w=majority") # IF Multiple Database Is False Then Fill Only This Database Url.
+if MULTIPLE_DATABASE == True:
     USER_DB_URI = DATABASE_URI
     OTHER_DB_URI = DATABASE_URI
     FILE_DB_URI = DATABASE_URI
     SEC_FILE_DB_URI = DATABASE_URI
 else:
     USER_DB_URI = DATABASE_URI # This Db is for User Data Store
-    OTHER_DB_URI = environ.get('OTHER_DB_URI', "") # This Db Is For Other Data Store
-    FILE_DB_URI = environ.get('FILE_DB_URI', "") # This Db Is For File Data Store
-    SEC_FILE_DB_URI = environ.get('SEC_FILE_DB_URI', "") # This Db is for File Data Store When First Db Is Going To Be Full.
+    OTHER_DB_URI = environ.get('OTHER_DB_URI', "mongodb+srv://hnyx:wywyw2@cluster0.9dxlslv.mongodb.net/?retryWrites=true&w=majority") # This Db Is For Other Data Store
+    FILE_DB_URI = environ.get('FILE_DB_URI', "mongodb+srv://userbot:userbot@cluster0.iweqz.mongodb.net/test?retryWrites=true&w=majority") # This Db Is For File Data Store
+    SEC_FILE_DB_URI = environ.get('SEC_FILE_DB_URI', "mongodb+srv://ravi:ravi12345@cluster0.hndinhj.mongodb.net/?retryWrites=true&w=majority") # This Db is for File Data Store When First Db Is Going To Be Full.
     
-DATABASE_NAME = environ.get('DATABASE_NAME', "techvjfilterbot")
+DATABASE_NAME = environ.get('DATABASE_NAME', "LCUxFilterBot")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'vjcollection')
 
 
@@ -101,9 +101,9 @@ OWNER_USERNAME = environ.get('OWNER_USERNAME', 'kingvj01') # owner username with
 
 
 # Clone Information : If Clone Mode Is True Then Bot Clone Other Bots.
-CLONE_MODE = bool(environ.get('CLONE_MODE', False)) # Set True or False
-CLONE_DATABASE_URI = environ.get('CLONE_DATABASE_URI', "") # Necessary If clone mode is true
-PUBLIC_FILE_CHANNEL = environ.get('PUBLIC_FILE_CHANNEL', '') # Public Channel Username Without @ or without https://t.me/ and Bot Is Admin With Full Right.
+CLONE_MODE = bool(environ.get('CLONE_MODE', True)) # Set True or False
+CLONE_DATABASE_URI = environ.get('CLONE_DATABASE_URI', "mongodb+srv://bharathkalladi38:4TDnaR1dZqAEshQq@cluster0.ps5ucul.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0") # Necessary If clone mode is true
+PUBLIC_FILE_CHANNEL = environ.get('PUBLIC_FILE_CHANNEL', 'LCUxPublicFile') # Public Channel Username Without @ or without https://t.me/ and Bot Is Admin With Full Right.
 
 
 # Links

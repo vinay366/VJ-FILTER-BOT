@@ -727,37 +727,37 @@ Also your tutorial will be Added Your Group...</b>"""
 
 
     DEVELOPER_TXT = """
-special Thanks To ❤️ Developers -
+Sᴘᴇᴄɪᴀʟ Tʜᴀɴᴋs Tᴏ ❤️ Dᴇᴠᴇʟᴏᴘᴇʀs -
 
--Dev 1 [Owner of this bot ]<a href='https://t.me/KingVj01'>VJ</a>
+-Dᴇᴠᴇʟᴏᴘᴇʀ 𝟷 [Oᴡɴᴇʀ Oғ Tʜɪs Bᴏᴛ ]<a href='https://t.me/Cute_Boy_Saravana'>Ƭɴ69 ×͜× Sᴀʀᴀᴠᴀɴᴀ࿐</a>
 
--Dev 2 <a href='https://t.me/vjbots_bot'>VJ</a>
+-Dᴇᴠᴇʟᴏᴘᴇʀ 2 <a href='https://t.me/TamilxLinks'>TamilxLinks</a>
 
--Dev 3 <a href='https://t.me/vj_botz>VJ Botz</a>
+-Dᴇᴠᴇʟᴏᴘᴇʀ 3 <a href='https://t.me/PMIxOfficials>PMIxOfficials</a>
 
-- Dev 4 <a href='https://t.me/vj_bots'>TEAM VJ</a>
+-Dᴇᴠᴇʟᴏᴘᴇʀ 4 <a href='https://t.me/UHD4KxMovies'>UHD4KxMovies</a>
 """
 
     RENAME_TXT = """
 🌌 <b><u>HOW TO SET THUMBNAIL</u></b>
   
-•> /set_thumb - send any picture to automatically set thumbnail.
+<b>•> /set_thumb - send any picture to automatically set thumbnail.
 •> /del_thumb use this command and delete your old thumbnail.
-•> /view_thumb use this command view your current thumbnail.
+•> /view_thumb use this command view your current thumbnail.</b>
 
 📑 <b><u>HOW TO SET CUSTOM CAPTION</u></b>
 
-•> /set_caption - set a custom caption
+<b>•> /set_caption - set a custom caption
 •> /see_caption - see your custom caption
 •> /del_caption - delete custom caption
 
-Example:- /set_caption 📕 File Name: {filename}
+Example :- /set_caption 📕 File Name : {filename}
 💾 Size: {filesize}
-⏰ Duration: {duration}
+⏰ Duration: {duration}</b>
 
 ✏️ <b><u>HOW TO RENAME A FILE</u></b>
 
-•> /rename - send any file and click rename option and type new file name and \nthen select [ document, video, audio ]👈 choice this.
+<b>•> /rename - send any file and click rename option and type new file name and \nthen select [ document, video, audio ]👈 choice this.</b>
 """
 
     STREAM_TXT = """<b><u>HOW TO GET STREAM AND DOWNLOAD LINK :</u>

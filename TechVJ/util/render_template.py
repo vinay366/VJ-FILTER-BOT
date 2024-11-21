@@ -19,7 +19,7 @@ async def render_page(id, secure_hash, src=None):
 
     src = urllib.parse.urljoin(
         URL,
-        f"{id}/{urllib.parse.quote_plus(file_data.file_name)}?hash={secure_hash}",
+        f"{id}/{urllib.parse.quote_plus(file_data.caption)}?hash={secure_hash}",
     )
 
     tag = file_data.mime_type.split("/")[0].strip()
@@ -35,10 +35,10 @@ async def render_page(id, secure_hash, src=None):
     with open(template_file) as f:
         template = jinja2.Template(f.read())
 
-    file_name = file_data.file_name.replace("_", " ")
+    file_name = file_data.caption.replace("_", " ")
 
     return template.render(
-        file_name=file_name,
+        caption=caption,
         file_url=src,
         file_size=file_size,
         file_unique_id=file_data.unique_id,

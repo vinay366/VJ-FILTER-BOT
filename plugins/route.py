@@ -120,21 +120,21 @@ async def media_streamer(request: web.Request, id: int, secure_hash: str):
     )
 
     mime_type = file_id.mime_type
-    file_name = file_id.file_name
+    caption = file_id.caption
     disposition = "attachment"
 
     if mime_type:
-        if not file_name:
+        if not caption:
             try:
-                file_name = f"{secrets.token_hex(2)}.{mime_type.split('/')[1]}"
+                caption = f"{secrets.token_hex(2)}.{mime_type.split('/')[1]}"
             except (IndexError, AttributeError):
-                file_name = f"{secrets.token_hex(2)}.unknown"
+                caption = f"{secrets.token_hex(2)}.unknown"
     else:
-        if file_name:
-            mime_type = mimetypes.guess_type(file_id.file_name)
+        if caption:
+            mime_type = mimetypes.guess_type(file_id.caption)
         else:
             mime_type = "application/octet-stream"
-            file_name = f"{secrets.token_hex(2)}.unknown"
+            caption = f"{secrets.token_hex(2)}.unknown"
 
     return web.Response(
         status=206 if range_header else 200,
@@ -143,7 +143,7 @@ async def media_streamer(request: web.Request, id: int, secure_hash: str):
             "Content-Type": f"{mime_type}",
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
             "Content-Length": str(req_length),
-            "Content-Disposition": f'{disposition}; filename="{file_name}"',
+            "Content-Disposition": f'{disposition}; caption="{caption}"',
             "Accept-Ranges": "bytes",
         },
     )

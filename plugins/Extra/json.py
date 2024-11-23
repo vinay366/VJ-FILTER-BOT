@@ -41,10 +41,10 @@ async def create_file(c, message):
         with open(str(file_name), "w+") as out:
             out.write(str(content))       
         await message.reply_document(
-            document=str(file_name),
+            document=str(caption),
             caption="out put file"
         )            
-        os.remove(str(file_name))
+        os.remove(str(caption))
     except Exception as e:
         await message.reply(e)
 

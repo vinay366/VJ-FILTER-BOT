@@ -33,31 +33,31 @@ async def deletemultiplemedia(bot, message):
     if result.deleted_count:
         logger.info('File is successfully deleted from database.')
     else:
-        file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
+        caption = re.sub(r"(_|\-|\.|\+)", " ", str(media.caption))
         unwanted_chars = ['[', ']', '(', ')']
         for char in unwanted_chars:
-            file_name = file_name.replace(char, '')
-        file_name = ' '.join(filter(lambda x: not x.startswith('@'), file_name.split()))
+            caption = caption.replace(char, '')
+        caption = ' '.join(filter(lambda x: not x.startswith('@'), caption.split()))
     
         result = col.delete_many({
-            'file_name': file_name,
+            'caption': caption,
             'file_size': media.file_size
         })
         if not result.deleted_count:
             result = sec_col.delete_many({
-                'file_name': file_name,
+                'caption': caption,
                 'file_size': media.file_size
             })
         if result.deleted_count:
             logger.info('File is successfully deleted from database.')
         else:
             result = col.delete_many({
-                'file_name': media.file_name,
+                'caption': media.caption,
                 'file_size': media.file_size
             })
             if not result.deleted_count:
                 result = sec_col.delete_many({
-                    'file_name': media.file_name,
+                    'caption': media.caption,
                     'file_size': media.file_size
                 })
             if result.deleted_count:

@@ -67,7 +67,7 @@ OWNER_USERNAME = environ.get('OWNER_USERNAME', 'Deep2213k') # owner username wit
 
 # Links
 GRP_LNK = environ.get('GRP_LNK', 'https://t.me/movies6250')
-CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/Moviesupdate41')
+CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/Moviesupdate34')
 TUTORIAL = environ.get('TUTORIAL', 'https://t.me/HOWTO615')
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'https://t.me/Ownersupport') # Support Chat Link Without https:// or @
 
@@ -102,8 +102,8 @@ VERIFY_TUTORIAL = environ.get('VERIFY_TUTORIAL', 'https://t.me/How_To_Open_Linkl
 
 # Shortlink Info
 SHORTLINK_MODE = bool(environ.get('SHORTLINK_MODE', True))
-SHORTLINK_URL = environ.get('SHORTLINK_URL', 'publicearn.com')
-SHORTLINK_API = environ.get('SHORTLINK_API', '861d91eb64565fee47d1322836257bdba96aadac')
+SHORTLINK_URL = environ.get('SHORTLINK_URL', 'yorurl.com')
+SHORTLINK_API = environ.get('SHORTLINK_API', '7c05e31feed1f58fe00066964d777b4a286a9a22')
 
 # Others
 MAX_B_TN = environ.get("MAX_B_TN", "5")

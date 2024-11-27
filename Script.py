@@ -91,7 +91,7 @@ Cᴏᴍᴍᴀɴᴅs Aɴᴅ Usᴀɢᴇ:
 my features Stay here new features coming soon...  
  <b>✯ Maintained by : <a href=https://t.me/Deep2213k>☢DP☢</a></b>
   
- <b>✯ Join here : <a href=https://t.me/Moviesupdate41>☢Join my updateds☢</a></b> 
+ <b>✯ Join here : <a href=https://t.me/Moviesupdate34>☢Join my updateds☢</a></b> 
   
  ./id - <code>ɢᴇᴛ ɪᴅ ᴏꜰ ᴀ ꜱᴘᴇᴄɪꜰɪᴇᴅ ᴜꜱᴇʀ.</ 
  code> 
@@ -208,7 +208,7 @@ Nᴀᴍᴇ - {}"""
 
     CAPTION = """<b>📂Fɪʟᴇɴᴀᴍᴇ : {file_name}
 
-<b> Size ⚙️: {file_size}</b>""" 
+<b> Size ⚙️: {file_size}</b>"""  
 
     IMDB_TEMPLATE_TXT = """
 <b>Query: {qurey}

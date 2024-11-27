@@ -56,7 +56,7 @@ Cᴏᴍᴍᴀɴᴅs Aɴᴅ Usᴀɢᴇ:
 2. ᴛʜɪꜱ ʙᴏᴛ ꜱᴜᴘᴘᴏʀᴛꜱ ʙᴜᴛᴛᴏɴꜱ ᴡɪᴛʜ ᴀɴʏ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇᴅɪᴀ ᴛʏᴘᴇ.
 3. ʙᴜᴛᴛᴏɴꜱ ꜱʜᴏᴜʟᴅ ʙᴇ ᴘʀᴏᴘᴇʀʟʏ ᴘᴀʀꜱᴇᴅ ᴀꜱ ᴍᴀʀᴋᴅᴏᴡɴ ꜰᴏʀᴍᴀᴛ
 <b>ᴜʀʟ ʙᴜᴛᴛᴏɴꜱ:</b>
-<code>[Button Text](buttonurl:https://t.me/Ownersupport/3)</code>
+<code>[Button Text](buttonurl:@Ownersupport/3)</code>
 <b>ᴀʟᴇʀᴛ ʙᴜᴛᴛᴏɴꜱ:</b>
 <code>[Button Text](buttonalert:ᴛʜɪꜱ ɪꜱ ᴀɴ ᴀʟᴇʀᴛ ᴍᴇꜱꜱᴀɢᴇ)</code>"""
 
@@ -206,7 +206,7 @@ Nᴀᴍᴇ - {}"""
 
 𝗠𝗲𝘀𝘀𝗮𝗴𝗲 <b>: {}</b>"""
 
-    CAPTION = """<b>📂Fɪʟᴇɴᴀᴍᴇ : {file_name}
+    CAPTION = """<b>📂Fɪʟᴇɴᴀᴍᴇ : @movies6250 {file_name}
 
 <b> Size ⚙️: {file_size}</b>"""  
 
@@ -687,7 +687,7 @@ special Thanks To ❤️ Developers -
 
 -Dev 2 <a href='https://t.me/Deep2213k'>ᴅᴘ</a>
 
--Dev 3 <a href='https://t.me/Moviesupdate41>ᴅᴘ Botz</a>
+-Dev 3 <a href='https://t.me/Moviesupdate34>ᴅᴘ Botz</a>
 
 - Dev 4 <a href='https://t.me/Ownersupport'>TEAM ᴅᴘ</a>
 """

@@ -4,17 +4,17 @@
 
 # Clone Code Credit : YT - @Tech_VJ / TG - @VJ_Bots / GitHub - @VJBots
 
+import re
+from Script import script
 from info import API_ID, API_HASH, CLONE_MODE, LOG_CHANNEL
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, BotCommand
 from database.users_chats_db import db
-import re
-from Script import script
 
 @Client.on_message(filters.command('clone'))
 async def clone_menu(client, message):
     if CLONE_MODE == False:
-        return 
+        return
     if await db.is_clone_exist(message.from_user.id):
         return await message.reply("**ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴏɴᴇᴅ ᴀ ʙᴏᴛ ᴅᴇʟᴇᴛᴇ ғɪʀsᴛ ɪᴛ ʙʏ /deleteclone**")
     else:
@@ -47,6 +47,8 @@ async def clone_menu(client, message):
 
 @Client.on_message(filters.command('deleteclone'))
 async def delete_clone_menu(client, message):
+    if CLONE_MODE == False:
+        return
     if await db.is_clone_exist(message.from_user.id):
         await db.delete_clone(message.from_user.id)
         await message.reply("**sᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ ʏᴏᴜʀ ᴄʟᴏɴᴇ ʙᴏᴛ, ʏᴏᴜ ᴄᴀɴ ᴄʀᴇᴀᴛᴇ ᴀɢᴀɪɴ ʙʏ /clone**")

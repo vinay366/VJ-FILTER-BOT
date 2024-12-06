@@ -6,70 +6,86 @@ import logging
 from struct import pack
 import re
 import base64
+import json
 from pyrogram.file_id import FileId
+from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from umongo import Instance, Document, fields
-from motor.motor_asyncio import AsyncIOMotorClient
-from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER, MAX_B_TN
+from info import FILE_DB_URI, SEC_FILE_DB_URI, DATABASE_NAME, COLLECTION_NAME, MULTIPLE_DATABASE, USE_CAPTION_FILTER, MAX_B_TN
 from utils import get_settings, save_group_settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-client = AsyncIOMotorClient(DATABASE_URI)
+client = MongoClient(FILE_DB_URI)
 db = client[DATABASE_NAME]
-instance = Instance.from_db(db)
+col = db[COLLECTION_NAME]
 
-@instance.register
-class Media(Document):
-    file_id = fields.StrField(attribute='_id')
-    file_ref = fields.StrField(allow_none=True)
-    file_name = fields.StrField(required=True)
-    file_size = fields.IntField(required=True)
-    file_type = fields.StrField(allow_none=True)
-    mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
-
-    class Meta:
-        indexes = ('$file_name', )
-        collection_name = COLLECTION_NAME
+sec_client = MongoClient(SEC_FILE_DB_URI)
+sec_db = sec_client[DATABASE_NAME]
+sec_col = sec_db[COLLECTION_NAME]
 
 
 async def save_file(media):
     """Save file in database"""
 
-    # TODO: Find better way to get same file_id for same media to avoid duplicates
     file_id, file_ref = unpack_new_file_id(media.file_id)
-    file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
-    try:
-        file = Media(
-            file_id=file_id,
-            file_ref=file_ref,
-            file_name=file_name,
-            file_size=media.file_size,
-            file_type=media.file_type,
-            mime_type=media.mime_type,
-            caption=media.caption.html if media.caption else None,
-        )
-    except ValidationError:
-        logger.exception('Error occurred while saving file in database')
-        return False, 2
+    file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name)) 
+    unwanted_chars = ['[', ']', '(', ')']
+    for char in unwanted_chars:
+        file_name = file_name.replace(char, '')
+    file_name = ' '.join(filter(lambda x: not x.startswith('@'), file_name.split()))
+    file = {
+        'file_id': file_id,
+        'file_name': file_name,
+        'file_size': media.file_size,
+        'caption': media.caption.html if media.caption else None
+    }
+    found1 = {'file_name': file_name}
+    found = {'file_id': file_id}
+    check1 = col.find_one(found1)
+    if check1:
+        print(f"{file_name} is already saved.")
+        return False, 0
+    check = col.find_one(found)
+    if check:
+        print(f"{file_name} is already saved.")
+        return False, 0
+    if MULTIPLE_DATABASE == True:
+        check3 = sec_col.find_one(found)
+        if check3:
+            print(f"{file_name} is already saved.")
+            return False, 0
+        check2 = sec_col.find_one(found1)
+        if check2:
+            print(f"{file_name} is already saved.")
+            return False, 0
+        result = db.command('dbstats')
+        data_size = result['dataSize']
+        if data_size > 503316480:
+            try:
+                sec_col.insert_one(file)
+                print(f"{file_name} is successfully saved.")
+                return True, 1
+            except DuplicateKeyError:      
+                print(f"{file_name} is already saved.")
+                return False, 0
+        else:
+            try:
+                col.insert_one(file)
+                print(f"{file_name} is successfully saved.")
+                return True, 1
+            except DuplicateKeyError:      
+                print(f"{file_name} is already saved.")
+                return False, 0
     else:
         try:
-            await file.commit()
-        except DuplicateKeyError:      
-            logger.warning(
-                f'{getattr(media, "file_name", "NO_FILE")} is already saved in database'
-            )
-
-            return False, 0
-        else:
-            logger.info(f'{getattr(media, "file_name", "NO_FILE")} is saved to database')
+            col.insert_one(file)
+            print(f"{file_name} is successfully saved.")
             return True, 1
-
-
+        except DuplicateKeyError:      
+            print(f"{file_name} is already saved.")
+            return False, 0
 
 async def get_search_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset)"""
@@ -88,10 +104,6 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
             else:
                 max_results = int(MAX_B_TN)
     query = query.strip()
-    #if filter:
-        #better ?
-        #query = query.replace(' ', r'(\s|\.|\+|\-|_)')
-        #raw_pattern = r'(\s|_|\-|\.|\+)' + query + r'(\s|_|\-|\.|\+)'
     if not query:
         raw_pattern = '.'
     elif ' ' not in query:
@@ -109,22 +121,28 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
     else:
         filter = {'file_name': regex}
 
-    if file_type:
-        filter['file_type'] = file_type
-
-    total_results = await Media.count_documents(filter)
-    next_offset = offset + max_results
-
-    if next_offset > total_results:
-        next_offset = ''
-
-    cursor = Media.find(filter)
-    # Sort by recent
-    cursor.sort('$natural', -1)
-    # Slice files according to offset and max results
-    cursor.skip(offset).limit(max_results)
-    # Get list of files
-    files = await cursor.to_list(length=max_results)
+    if MULTIPLE_DATABASE == True:
+        cursor1 = col.find(filter)
+        cursor2 = sec_col.find(filter)
+    else:
+        cursor = col.find(filter)
+        
+    if MULTIPLE_DATABASE == True:
+        files1 = [file for file in cursor1]
+        files2 = [file for file in cursor2]
+        files_ = files1 + files2
+        files = files_[offset:][:max_results]
+        total_results = len(files_)
+        next_offset = offset + max_results
+        if next_offset >= total_results:
+            next_offset = ""
+    else:
+        files_ = [file for file in cursor]
+        files = files_[offset:][:max_results]
+        total_results = len(files_)
+        next_offset = offset + max_results
+        if next_offset >= total_results:
+            next_offset = ""
 
     return files, next_offset, total_results
 
@@ -152,23 +170,33 @@ async def get_bad_files(query, file_type=None, filter=False):
     else:
         filter = {'file_name': regex}
 
-    if file_type:
-        filter['file_type'] = file_type
-
-    total_results = await Media.count_documents(filter)
-
-    cursor = Media.find(filter)
-    # Sort by recent
-    cursor.sort('$natural', -1)
+    if MULTIPLE_DATABASE == True:
+        result1 = col.count_documents(filter)
+        result2 = sec_col.count_documents(filter)
+        total_results = result1 + result2
+    else:
+        total_results = col.count_documents(filter)
+    
+    if MULTIPLE_DATABASE == True:
+        cursor1 = col.find(filter)
+        cursor2 = sec_col.find(filter)
+    else:
+        cursor = col.find(filter)
     # Get list of files
-    files = await cursor.to_list(length=total_results)
-
+    if MULTIPLE_DATABASE == True:
+        files1 = list(cursor1)
+        files2 = list(cursor2)
+        files = files1 + files2
+    else:
+        files = list(cursor)
+    
     return files, total_results
 
 async def get_file_details(query):
     filter = {'file_id': query}
-    cursor = Media.find(filter)
-    filedetails = await cursor.to_list(length=1)
+    filedetails = col.find_one(filter)
+    if not filedetails:
+        filedetails = sec_col.find_one(filter)
     return filedetails
 
 

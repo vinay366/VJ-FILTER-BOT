@@ -5,10 +5,10 @@
 import re, logging
 from pyrogram import Client, filters
 from info import DELETE_CHANNELS
-from database.ia_filterdb import Media, unpack_new_file_id
+from database.ia_filterdb import col, sec_col, unpack_new_file_id
 
 logger = logging.getLogger(__name__)
-media_filter = filters.document | filters.video | filters.audio
+media_filter = filters.document | filters.video
 
 @Client.on_message(filters.chat(DELETE_CHANNELS) & media_filter)
 async def deletemultiplemedia(bot, message):
@@ -23,26 +23,43 @@ async def deletemultiplemedia(bot, message):
 
     file_id, file_ref = unpack_new_file_id(media.file_id)
 
-    result = await Media.collection.delete_one({
-        '_id': file_id,
+    result = col.delete_one({
+        'file_id': file_id,
     })
+    if not result.deleted_count:
+        result = sec_col.delete_one({
+            'file_id': file_id,
+        })
     if result.deleted_count:
         logger.info('File is successfully deleted from database.')
     else:
         file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
-        result = await Media.collection.delete_many({
+        unwanted_chars = ['[', ']', '(', ')']
+        for char in unwanted_chars:
+            file_name = file_name.replace(char, '')
+        file_name = ' '.join(filter(lambda x: not x.startswith('@'), file_name.split()))
+    
+        result = col.delete_many({
             'file_name': file_name,
-            'file_size': media.file_size,
-            'mime_type': media.mime_type
+            'file_size': media.file_size
+        })
+        if not result.deleted_count:
+            result = sec_col.delete_many({
+                'file_name': file_name,
+                'file_size': media.file_size
             })
         if result.deleted_count:
             logger.info('File is successfully deleted from database.')
         else:
-            result = await Media.collection.delete_many({
+            result = col.delete_many({
                 'file_name': media.file_name,
-                'file_size': media.file_size,
-                'mime_type': media.mime_type
+                'file_size': media.file_size
             })
+            if not result.deleted_count:
+                result = sec_col.delete_many({
+                    'file_name': media.file_name,
+                    'file_size': media.file_size
+                })
             if result.deleted_count:
                 logger.info('File is successfully deleted from database.')
             else:

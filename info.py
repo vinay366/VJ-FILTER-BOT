@@ -88,7 +88,7 @@ PUBLIC_FILE_CHANNEL = environ.get('PUBLIC_FILE_CHANNEL', 'oytbawr') # Public Cha
 
 
 # Links
-GRP_LNK = environ.get('GRP_LNK', 'https://t.me/moviiesonerequest')
+GRP_LNK = environ.get('GRP_LNK', 'https://t.me/moviiezonerequest')
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/mzbotz')
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'mzbotzsupport') # Support Chat Link Without https:// or @
 OWNER_LNK = environ.get('OWNER_LNK', 'https://t.me/sammarathi')

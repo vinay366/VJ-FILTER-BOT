@@ -246,7 +246,7 @@ Nᴀᴍᴇ - {}"""
 
 𝗠𝗲𝘀𝘀𝗮𝗴𝗲 <b>: {}</b>"""
 
-    CAPTION = """<b>📂Fɪʟᴇɴᴀᴍᴇ : {@MzMoviiez file_name}
+    CAPTION = """<b>📂Fɪʟᴇɴᴀᴍᴇ : {@MzMoviiez_file_name}
 
 <b> Size ⚙️: {file_size}</b>""" 
 

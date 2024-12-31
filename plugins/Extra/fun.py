@@ -1,10 +1,5 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
-
 from pyrogram import Client, filters
 
-# AESTHETIC------------ https://telegram.me/Josprojects ------------ #
 
 def aesthetify(string):
     PRINTABLE_ASCII = range(0x21, 0x7f)

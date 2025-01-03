@@ -32,9 +32,13 @@ def search(song):
     return find
        
 def lyrics(song):
-    fin = search(song)
+    fin = search(song)  # Fetch the song data
+    print(fin)  # Debug the structure of the response
     text = f'**🎶 Sᴜᴄᴄᴇꜱꜰᴜʟʟy Exᴛʀᴀᴄᴛᴇᴅ Lyɪʀɪᴄꜱ Oꜰ {song}**\n\n'
-    text += f'`{fin["lyrics"]}`'
+    
+    lyrics_text = fin.get('lyrics', 'No lyrics found')  # Safely get lyrics
+    text += f'`{lyrics_text}`'
+    
     text += '\n\n\n**Made By Artificial Intelligence**'
     return text
 

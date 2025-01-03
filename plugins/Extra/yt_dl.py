@@ -164,50 +164,60 @@ async def song(client, message):
 
 @Client.on_message(filters.command(["video", "mp4"]))
 async def vsong(client, message: Message):
-    urlissed = message.text.split(None, 1)[1] if len(message.text.split(None, 1)) > 1 else None
-    if not urlissed:
-        return await message.reply("Example: /video [Your video link]")
+    urlissed = get_text(message)
+    pablo = await client.send_message(message.chat.id, f"**𝙵𝙸𝙽𝙳𝙸𝙽𝙶 𝚈𝙾𝚄𝚁 𝚅𝙸𝙳𝙴𝙾** `{urlissed}`")
     
-    pablo = await client.send_message(message.chat.id, f"**Finding your video...** `{urlissed}`")
+    if not urlissed:
+        return await pablo.edit("Example: /video Your video link")     
+    
+    search = SearchVideos(f"{urlissed}", offset=1, mode="dict", max_results=1)
+    mi = search.result()
+    mio = mi["search_result"]
+    mo = mio[0]["link"]
+    thum = mio[0]["title"]
+    fridayz = mio[0]["id"]
+    kekme = f"https://img.youtube.com/vi/{fridayz}/hqdefault.jpg"
+    
+    await asyncio.sleep(0.6)
+    url = mo
+    sedlyf = wget.download(kekme)
+    
+    opts = {
+        "format": "best",
+        "addmetadata": True,
+        "key": "FFmpegMetadata",
+        "prefer_ffmpeg": True,
+        "geo_bypass": True,
+        "nocheckcertificate": True,
+        "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}],
+        "outtmpl": "%(id)s.mp4",
+        "logtostderr": False,
+        "quiet": True,
+    }
     
     try:
-        search = SearchVideos(urlissed, offset=1, mode="dict", max_results=1)
-        video = search.result()["search_result"][0]
-        
-        video_url = video["link"]
-        video_title = video["title"]
-        video_id = video["id"]
-        video_thumbnail = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
-        
-        # Downloading the video thumbnail
-        thumb_file = wget.download(video_thumbnail)
-        
-        # Video download options
-        opts = {
-            "format": "best",
-            "addmetadata": True,
-            "key": "FFmpegMetadata",
-            "prefer_ffmpeg": True,
-            "geo_bypass": True,
-            "nocheckcertificate": True,
-            "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}],
-            "outtmpl": f"{video_id}.mp4",
-            "logtostderr": False,
-            "quiet": True,
-        }
-        
         with YoutubeDL(opts) as ytdl:
-            ytdl_data = ytdl.extract_info(video_url, download=True)
-        
-        file_stark = f"{ytdl_data['id']}.mp4"
-        capy = f"""**TITLE :** [{video_title}]({video_url})\n**REQUESTED BY :** {message.from_user.mention}"""
-        
-                await rate_limit_retry(client.send_video, message.chat.id,
-            video=open(file_stark, "rb"),
-            duration=int(ytdl_data["duration"]),
-            file_name=str(ytdl_data["title"]),
-            thumb=thumb_file,
-            caption=capy,
-            supports_streaming=True,        
-            reply_to_message_id=message.id
-        )
+            ytdl_data = ytdl.extract_info(url, download=True)
+    except Exception as e:
+        return await pablo.edit_text(f"**𝙳𝚘𝚠𝚗𝚕𝚘𝚊𝚍 𝙵𝚊𝚒𝚕𝚎𝚍 𝙿𝚕𝚎𝚊𝚜𝚎 𝚃𝚛𝚢 𝙰𝚐𝚊𝚒𝚗..♥️** \n**Error :** `{str(e)}`")       
+    
+    file_stark = f"{ytdl_data['id']}.mp4"
+    capy = f"""**𝚃𝙸𝚃𝙻𝙴 :** [{thum}]({mo})\n**𝚁𝙴𝚀𝚄𝙴𝚂𝚃𝙴𝙳 𝙱𝚈 :** {message.from_user.mention}"""
+    
+    # Here, ensure consistent indentation
+    await rate_limit_retry(client.send_video, message.chat.id,
+        video=open(file_stark, "rb"),
+        duration=int(ytdl_data["duration"]),
+        file_name=str(ytdl_data["title"]),
+        thumb=sedlyf,
+        caption=capy,
+        supports_streaming=True,        
+        reply_to_message_id=message.id
+    )
+    
+    await pablo.delete()
+    
+    # Clean up files
+    for files in (sedlyf, file_stark):
+        if files and os.path.exists(files):
+            os.remove(files)

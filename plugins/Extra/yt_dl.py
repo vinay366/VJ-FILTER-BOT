@@ -9,7 +9,7 @@ from youtubesearchpython import SearchVideos
 from yt_dlp import YoutubeDL
 
 # Function to load cookies from the cookies.json file
-def load_cookies(cookies_path="cookies.json"):
+def load_cookies(cookies_path="https://github.com/Partik1165/UMESH-BOT/blob/6f3ea46d1bbc47e9a60992bc72ffbe78dac93b23/cookies.json"):
     if os.path.exists(cookies_path):
         with open(cookies_path, "r") as f:
             cookies = json.load(f)

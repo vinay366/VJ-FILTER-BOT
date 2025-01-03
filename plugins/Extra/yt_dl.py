@@ -79,6 +79,20 @@ def save_metadata_to_json(info_dict, filename="video_metadata.json"):
     print(f"Metadata saved to {filename}.")
 
 # The main bot code using Pyrogram
+async def rate_limit_retry(func, *args, **kwargs):
+    """Helper function to retry a function after a flood wait."""
+    while True:
+        try:
+            return await func(*args, **kwargs)
+        except Exception as e:
+            # Check if error is related to flood wait
+            if "FLOOD_WAIT" in str(e):
+                wait_time = int(str(e).split()[-1])  # Get the wait time from error
+                print(f"Rate-limited, retrying after {wait_time} seconds.")
+                await asyncio.sleep(wait_time + 1)  # Wait for the specified time
+            else:
+                raise e  # Raise other exceptions
+
 @Client.on_message(filters.command(['song', 'mp3']) & filters.private)
 async def song(client, message):
     user_id = message.from_user.id 
@@ -125,8 +139,8 @@ async def song(client, message):
         
         cap = f"**BY›› [UPDATE]({CHNL_LNK})**"
         
-        await message.reply_audio(
-            audio_file,
+        await rate_limit_retry(client.send_audio, message.chat.id,
+            audio=open(audio_file, "rb"),
             caption=cap,
             quote=False,
             title=title,
@@ -188,20 +202,6 @@ async def vsong(client, message: Message):
         file_stark = f"{ytdl_data['id']}.mp4"
         capy = f"""**TITLE :** [{video_title}]({video_url})\n**REQUESTED BY :** {message.from_user.mention}"""
         
-        await client.send_video(
-            message.chat.id,
+        await rate_limit_retry(client.send_video, message.chat.id,
             video=open(file_stark, "rb"),
-            duration=int(ytdl_data["duration"]),
-            file_name=str(ytdl_data["title"]),
-            thumb=thumb_file,
-            caption=capy,
-            supports_streaming=True,        
-            reply_to_message_id=message.id
-        )
-        
-        await pablo.delete()
-        os.remove(thumb_file)
-        os.remove(file_stark)
-    
-    except Exception as e:
-        await pablo.edit_text(f"**Download
+            duration=int

@@ -9,7 +9,7 @@ from youtubesearchpython import SearchVideos
 from yt_dlp import YoutubeDL
 
 # Define a custom User-Agent (you can copy one from your browser)
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0"
 
 @Client.on_message(filters.command(['song', 'mp3']) & filters.private)
 async def song(client, message):

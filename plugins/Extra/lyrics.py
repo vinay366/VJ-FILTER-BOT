@@ -6,7 +6,10 @@ import requests
 import os
 
 
-API = "VNcYSYtcNHWiE8TuUF3E6LqiwqtEZeBUmMvcj5En7UzX-xx-MZZOerYpzEoHbMsA"
+GENIUS_API_TOKEN = 'VNcYSYtcNHWiE8TuUF3E6LqiwqtEZeBUmMvcj5En7UzX-xx-MZZOerYpzEoHbMsA'
+
+BASE_URL = "https://api.genius.com"
+
 
 @Client.on_message(filters.text & filters.command(["lyrics"]))
 async def sng(bot, message):
@@ -25,20 +28,46 @@ async def sng(bot, message):
     else:
         await vj.reply_text("Send me only text Buddy.")
 
-
+# Function to search for the song and get the song page URL
 def search(song):
-    r = requests.get(API + song)
-    find = r.json()
-    return find
-       
+    headers = {'Authorization': f'Bearer {GENIUS_API_TOKEN}'}
+    search_url = BASE_URL + "/search"
+    
+    # Make a request to Genius' search endpoint with the song name
+    params = {'q': song}
+    response = requests.get(search_url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        json_data = response.json()
+        # Get the first song result (usually the most relevant)
+        hit = json_data['response']['hits'][0]['result']
+        song_url = hit['url']
+        # Fetch lyrics from the song's page
+        lyrics = get_lyrics_from_url(song_url)
+        return {"lyrics": lyrics}
+    else:
+        return {"lyrics": "Song not found or error occurred."}
+
+# Function to scrape lyrics from the Genius song page
+def get_lyrics_from_url(song_url):
+    response = requests.get(song_url)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        lyrics_div = soup.find('div', class_='lyrics')
+        
+        if lyrics_div:
+            return lyrics_div.get_text(strip=True)
+        else:
+            return "Lyrics not found."
+    else:
+        return "Could not retrieve the song page."
+
+# Function to extract and format lyrics
 def lyrics(song):
-    fin = search(song)  # Fetch the song data
-    print(fin)  # Debug the structure of the response
+    fin = search(song)
     text = f'**🎶 Sᴜᴄᴄᴇꜱꜰᴜʟʟy Exᴛʀᴀᴄᴛᴇᴅ Lyɪʀɪᴄꜱ Oꜰ {song}**\n\n'
-    
-    lyrics_text = fin.get('lyrics', 'No lyrics found')  # Safely get lyrics
-    text += f'`{lyrics_text}`'
-    
+    text += f'`{fin["lyrics"]}`'
     text += '\n\n\n**Made By Artificial Intelligence**'
     return text
 

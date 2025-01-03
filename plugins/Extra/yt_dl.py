@@ -8,18 +8,7 @@ from youtube_search import YoutubeSearch
 from youtubesearchpython import SearchVideos
 from yt_dlp import YoutubeDL
 
-from __future__ import unicode_literals
-import os
-import requests
-import json
-import asyncio
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from youtube_search import YoutubeSearch
-from yt_dlp import YoutubeDL
-from info import CHNL_LNK  # Your channel link or any other info
-
-# Function to load cookies from the cookies.json file
+# Function to load cookies from the cookies.json file (if required for authentication)
 def load_cookies(cookies_path="cookies.json"):
     if os.path.exists(cookies_path):
         with open(cookies_path, "r") as f:
@@ -27,36 +16,26 @@ def load_cookies(cookies_path="cookies.json"):
         print("Cookies loaded successfully.")
         return cookies
     else:
-        raise FileNotFoundError(f"Cookies file {cookies_path} not found.")
+        print(f"No cookies file found at {cookies_path}. Proceeding without it.")
+        return {}
 
-# Function to handle rate-limiting, retrying after flood waits
-async def rate_limit_retry(func, *args, **kwargs):
-    while True:
+# Search for the video or audio using yt-dlp and return the URL
+def search_and_get_url(query):
+    ydl_opts = {
+        'quiet': True,
+        'noplaylist': True,
+    }
+    with YoutubeDL(ydl_opts) as ydl:
         try:
-            return await func(*args, **kwargs)
-        except Exception as e:
-            if "FLOOD_WAIT" in str(e):
-                wait_time = int(str(e).split()[-1])  # Get the wait time from error
-                print(f"Rate-limited, retrying after {wait_time} seconds.")
-                await asyncio.sleep(wait_time + 1)  # Wait for the specified time
+            result = ydl.extract_info(f"ytsearch:{query}", download=False)
+            if 'entries' in result:
+                video = result['entries'][0]  # Get the first video result
+                return video['url'], video['title'], video['duration']
             else:
-                raise e  # Raise other exceptions
-
-# Search YouTube and get the best result
-def get_video_info(query):
-    try:
-        results = YoutubeSearch(query, max_results=1).to_dict()
-        link = f"https://youtube.com{results[0]['url_suffix']}"
-        title = results[0]["title"]
-        thumbnail = results[0]["thumbnails"][0]
-        duration = results[0]["duration"]
-        thumbnail_name = f'thumb_{title}.jpg'
-        thumb = requests.get(thumbnail, allow_redirects=True)
-        open(thumbnail_name, 'wb').write(thumb.content)
-        return link, title, duration, thumbnail_name
-    except Exception as e:
-        print(f"Error fetching video info: {str(e)}")
-        return None, None, None, None
+                return None, None, None
+        except Exception as e:
+            print(f"Error in search: {str(e)}")
+            return None, None, None
 
 # Function to download audio (MP3 format)
 def download_audio(url, output_path="audio.mp3"):
@@ -90,7 +69,7 @@ def download_video(url, output_path="video.mp4"):
         except Exception as e:
             print(f"Error downloading video: {str(e)}")
 
-# Define the Pyrogram bot
+# Initialize the bot
 app = Client("my_bot")
 
 # Command for downloading audio
@@ -103,29 +82,29 @@ async def song(client, message: Message):
     
     await message.reply(f"Searching for {query} on YouTube...")
     
-    link, title, duration, thumbnail_name = get_video_info(query)
+    # Get video URL, title, and duration from yt-dlp
+    link, title, duration = search_and_get_url(query)
     if not link:
         await message.reply("Couldn't find the song.")
         return
 
     await message.reply(f"Found: {title}\nDownloading audio...")
 
-    # Download audio
+    # Download audio (MP3 format)
     audio_file = f"{title}.mp3"
     download_audio(link, audio_file)
 
+    # Send audio to the user
     await message.reply_audio(
         audio=open(audio_file, 'rb'),
         title=title,
         performer='Artist',  # You can change this if needed
         duration=duration,
-        thumb=thumbnail_name,
-        caption=f"Download link: {CHNL_LNK}"
+        caption=f"Here is your song: {title}"
     )
 
-    # Cleanup
+    # Cleanup the files
     os.remove(audio_file)
-    os.remove(thumbnail_name)
     print("Audio sent and cleaned up.")
 
 # Command for downloading video
@@ -138,27 +117,29 @@ async def video(client, message: Message):
     
     await message.reply(f"Searching for {query} on YouTube...")
     
-    link, title, duration, thumbnail_name = get_video_info(query)
+    # Get video URL, title, and duration from yt-dlp
+    link, title, duration = search_and_get_url(query)
     if not link:
         await message.reply("Couldn't find the video.")
         return
 
     await message.reply(f"Found: {title}\nDownloading video...")
 
-    # Download video
+    # Download video (MP4 format)
     video_file = f"{title}.mp4"
     download_video(link, video_file)
 
+    # Send video to the user
     await message.reply_video(
         video=open(video_file, 'rb'),
-        caption=f"Download link: {CHNL_LNK}",
-        thumb=thumbnail_name,
-        title=title,
-        duration=int(duration.split(':')[0])*60 + int(duration.split(':')[1]),
+        caption=f"Here is your video: {title}",
+        duration=duration,
     )
 
-    # Cleanup
+    # Cleanup the files
     os.remove(video_file)
-    os.remove(thumbnail_name)
     print("Video sent and cleaned up.")
 
+# Run the bot
+if __name__ == "__main__":
+    app.run()

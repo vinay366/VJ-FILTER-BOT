@@ -4,6 +4,7 @@ from info import API_ID, API_HASH, CLONE_MODE, LOG_CHANNEL
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, BotCommand
 from database.users_chats_db import db
+from info import LOG_CHANNEL
 
 @Client.on_message(filters.command('clone'))
 async def clone_menu(client, message):

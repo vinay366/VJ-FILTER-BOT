@@ -202,6 +202,12 @@ async def vsong(client, message: Message):
         file_stark = f"{ytdl_data['id']}.mp4"
         capy = f"""**TITLE :** [{video_title}]({video_url})\n**REQUESTED BY :** {message.from_user.mention}"""
         
-        await rate_limit_retry(client.send_video, message.chat.id,
+                await rate_limit_retry(client.send_video, message.chat.id,
             video=open(file_stark, "rb"),
-            duration=int
+            duration=int(ytdl_data["duration"]),
+            file_name=str(ytdl_data["title"]),
+            thumb=thumb_file,
+            caption=capy,
+            supports_streaming=True,        
+            reply_to_message_id=message.id
+        )

@@ -107,7 +107,7 @@ USE_CAPTION_FILTER = bool(environ.get('USE_CAPTION_FILTER', True))
 
 
 # Token Verification Info :
-VERIFY = bool(environ.get('VERIFY', True))
+VERIFY = bool(environ.get('VERIFY', False))
 VERIFY_SHORTLINK_URL = environ.get('VERIFY_SHORTLINK_URL', 'atglinks.com')
 VERIFY_SHORTLINK_API = environ.get('VERIFY_SHORTLINK_API', 'eefa494075f6c780c01a6ea7825358082da1174a')
 VERIFY_TUTORIAL = environ.get('VERIFY_TUTORIAL', 'https://t.me/how_to_open_Iink')
@@ -120,7 +120,7 @@ VERIFY_SND_SHORTLINK_API = environ.get('VERIFY_SND_SHORTLINK_API', '3be88b37daa0
 
 
 # Shortlink Info
-SHORTLINK_MODE = bool(environ.get('SHORTLINK_MODE', True)) # Set True Or False
+SHORTLINK_MODE = bool(environ.get('SHORTLINK_MODE', False)) # Set True Or False
 SHORTLINK_URL = environ.get('SHORTLINK_URL', 'atglinks.com')
 SHORTLINK_API = environ.get('SHORTLINK_API', 'eefa494075f6c780c01a6ea7825358082da1174a')
 TUTORIAL = environ.get('TUTORIAL', 'https://t.me/how_to_open_Iink') # How Open Shortner Link Video Link , Channel Link Where You Upload Your Video.

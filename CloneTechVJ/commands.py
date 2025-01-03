@@ -186,7 +186,7 @@ async def settings(client, message):
     api = await client.ask(message.chat.id, "<b>Now Send Your Api</b>")
     try:
         shortzy = Shortzy(api_key=api.text, base_site=url.text)
-        link = 'https://t.me/Movie_DownIoad_Channel'
+        link = 'https://t.me/+9z_v3BgC4kFhYTI1'
         await shortzy.convert(link)
     except Exception as e:
         await message.reply(f"**Error In Converting Link**\n\n<code>{e}</code>\n\n**Start The Process Again By - /settings**", reply_markup=InlineKeyboardMarkup(btn))

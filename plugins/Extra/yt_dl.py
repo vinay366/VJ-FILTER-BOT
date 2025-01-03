@@ -8,6 +8,9 @@ from youtube_search import YoutubeSearch
 from youtubesearchpython import SearchVideos
 from yt_dlp import YoutubeDL
 
+# Define a custom User-Agent (you can copy one from your browser)
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+
 @Client.on_message(filters.command(['song', 'mp3']) & filters.private)
 async def song(client, message):
     user_id = message.from_user.id 
@@ -17,8 +20,14 @@ async def song(client, message):
     print(query)
 
     m = await message.reply(f"**ѕєαrchíng чσur ѕσng...!\n {query}**")
-    
-    ydl_opts = {"format": "bestaudio[ext=m4a]"}
+
+    # Custom yt-dlp options with User-Agent
+    ydl_opts = {
+        "format": "bestaudio[ext=m4a]",
+        "headers": {
+            "User-Agent": USER_AGENT  # Setting the custom User-Agent here
+        }
+    }
 
     try:
         # Use youtube-search to search for the song
@@ -76,4 +85,5 @@ async def song(client, message):
                 os.remove(thumb_name)
         except Exception as e:
             print(f"Error deleting temporary files: {e}")
+
 

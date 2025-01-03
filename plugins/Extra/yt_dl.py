@@ -204,5 +204,4 @@ async def vsong(client, message: Message):
         os.remove(file_stark)
     
     except Exception as e:
-        await pablo.edit_text(f"**Download Failed, Try Again Later**\n**Error:** `{str(e)}`")
-        print(f"Error: {e}")
+        await pablo.edit_text(f"**Download

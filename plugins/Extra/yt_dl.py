@@ -38,8 +38,6 @@ with YoutubeDL(ydl_opts) as ydl:
     except Exception as e:
         print(f"Error: {str(e)}")
 
-                os.remove(thumb_name)
-        except Exception as e:
-            print(f"Error deleting temporary files: {e}")
-
-
+  os.remove(thumb_name)  
+except Exception as e:
+    print(f"Error: {e}")

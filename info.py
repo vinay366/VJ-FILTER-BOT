@@ -83,7 +83,7 @@ PUBLIC_FILE_CHANNEL = environ.get('PUBLIC_FILE_CHANNEL', 'Movie_DownIoad_Public'
 
 
 # Links
-GRP_LNK = environ.get('GRP_LNK', 'https://t.me/Movie_DownIoad_Group')
+GRP_LNK = environ.get('GRP_LNK', 'https://t.me/Movie_DownIoad')
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/+9z_v3BgC4kFhYTI1')
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'Movie_DownIoad_Support') # Support Chat Link Without https:// or @
 OWNER_LNK = environ.get('OWNER_LNK', 'https://t.me/BotZ_Umesh')

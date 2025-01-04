@@ -44,3 +44,4 @@ selenium
 pyrogram
 undetected-chromedriver
 Chromium
+webdriver-manager

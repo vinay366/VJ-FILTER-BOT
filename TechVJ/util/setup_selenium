@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
 # Define the path for ChromeDriver
-CHROMEDRIVER_PATH = "TechVJ/util/install_chromedriver.py"  # Change as needed for your system
+CHROMEDRIVER_PATH = "install_chromedriver.py"  # Change as needed for your system
 
 def setup_selenium():
     options = Options()

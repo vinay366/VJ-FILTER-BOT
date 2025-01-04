@@ -1,12 +1,23 @@
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton 
-from info import CHNL_LNK
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-import requests 
+import requests
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from info import CHNL_LNK
 import os
 
-GENIUS_API_KEY = "ZSXjn8OAKM669PrE2Lo1QjZC5dFd3j3K5AbZ4kAHex3sIH_rWvwTv6PhXlAY9iqh"
 API_URL = "https://api.genius.com/search"
+GENIUS_API_KEY = "ZSXjn8OAKM669PrE2Lo1QjZC5dFd3j3K5AbZ4kAHex3sIH_rWvwTv6PhXlAY9iqh"
+
+# Configure Selenium WebDriver
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+driver_service = Service('/path/to/chromedriver')  # Replace with the path to your ChromeDriver
 
 @Client.on_message(filters.text & filters.command(["lyrics"]))
 async def sng(bot, message):
@@ -45,9 +56,6 @@ async def sng(bot, message):
         await vj.reply_text("Send me only text Buddy.")
 
 def fetch_lyrics_and_url(song):
-    """
-    Fetch lyrics, Genius URL, and artist image using the song name.
-    """
     headers = {"Authorization": f"Bearer {GENIUS_API_KEY}"}
     params = {"q": song}
     response = requests.get(API_URL, headers=headers, params=params)
@@ -67,7 +75,7 @@ def fetch_lyrics_and_url(song):
     artist_image = song_data["primary_artist"]["image_url"]
 
     # Fetch lyrics from the song page
-    lyrics = fetch_lyrics_from_url(song_url)
+    lyrics = fetch_lyrics_from_url_with_selenium(song_url)
     if not lyrics:
         raise ValueError("Lyrics not found.")
 
@@ -81,22 +89,18 @@ def fetch_lyrics_and_url(song):
         artist_image,
     )
 
-def fetch_lyrics_from_url(url):
+def fetch_lyrics_from_url_with_selenium(url):
     """
-    Fetch lyrics directly from the Genius song page using BeautifulSoup.
+    Fetch lyrics using Selenium for JavaScript-rendered content.
     """
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        raise ValueError("Failed to fetch lyrics page.")
+    driver = webdriver.Chrome(service=driver_service, options=options)
+    driver.get(url)
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    driver.quit()
 
-    soup = BeautifulSoup(response.text, "html.parser")
     lyrics_divs = soup.find_all("div", class_="Lyrics__Container-sc-1ynbvzw-6")
     if not lyrics_divs:
         raise ValueError("Lyrics not found on the page.")
 
-    # Extract text and clean up
     lyrics = "\n".join([div.get_text(separator="\n").strip() for div in lyrics_divs])
     return lyrics.strip()

@@ -10,7 +10,6 @@ API_URL = "https://api.genius.com/search"
 
 @Client.on_message(filters.text & filters.command(["lyrics"]))
 async def sng(bot, message):
-    # Ask user for the song name
     vj = await bot.ask(chat_id=message.from_user.id, text="Now send me the song name.")
     if vj.text:
         mee = await vj.reply_text("`Searching 🔎`")
@@ -86,18 +85,18 @@ def fetch_lyrics_from_url(url):
     """
     Fetch lyrics directly from the Genius song page using BeautifulSoup.
     """
-    response = requests.get(url)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    response = requests.get(url, headers=headers)
     if response.status_code != 200:
         raise ValueError("Failed to fetch lyrics page.")
 
     soup = BeautifulSoup(response.text, "html.parser")
-    lyrics_div = soup.find("div", class_="Lyrics__Container-sc-1ynbvzw-6")
-    if not lyrics_div:
+    lyrics_divs = soup.find_all("div", class_="Lyrics__Container-sc-1ynbvzw-6")
+    if not lyrics_divs:
         raise ValueError("Lyrics not found on the page.")
 
     # Extract text and clean up
-    lyrics = "\n".join([line.get_text(separator="\n") for line in lyrics_div.find_all("p")])
+    lyrics = "\n".join([div.get_text(separator="\n").strip() for div in lyrics_divs])
     return lyrics.strip()
-
-
-

@@ -2,6 +2,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import os
+# Provide the full path to chromedriver
+driver = webdriver.Chrome(executable_path="install_chromedriver.py")
 
 CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH")  # Path environment variable se lo
 

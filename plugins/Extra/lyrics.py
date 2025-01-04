@@ -62,9 +62,3 @@ def fetch_lyrics(song):
         f"`{lyrics.text}`\n\n"
         "**Made By Artificial Intelligence**"
     )
-
-    return (
-        f"**🎶 Successfully Found Lyrics for {song} by {artist}:**\n\n"
-        f"`{lyrics}`\n\n"
-        "**Made By Artificial Intelligence**"
-    )

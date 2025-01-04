@@ -43,3 +43,4 @@ beautifulsoup4
 selenium
 pyrogram
 undetected-chromedriver
+Chromium

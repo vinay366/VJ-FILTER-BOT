@@ -1,27 +1,16 @@
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import os
 
-# ChromeDriver ka exact path yahan specify karein
-CHROMEDRIVER_PATH = "install_chromedriver.py"  # Linux/Mac
-# CHROMEDRIVER_PATH = "C:\\path\\to\\chromedriver.exe"  # Windows
+CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH")  # Path environment variable se lo
 
 def setup_selenium():
     options = Options()
-    options.add_argument("--headless")  # Background mode
+    options.add_argument("--headless")  # GUI ke bina run kare
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # ChromeDriver service
-    service = Service(CHROMEDRIVER_PATH)
+    service = Service(CHROMEDRIVER_PATH)  # ChromeDriver ka path yahaan pass karo
     driver = webdriver.Chrome(service=service, options=options)
     return driver
-
-# Test Selenium Setup
-try:
-    driver = setup_selenium()
-    driver.get("https://www.google.com")
-    print("Page Title:", driver.title)
-    driver.quit()
-except Exception as e:
-    print("Error:", e)

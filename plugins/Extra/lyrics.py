@@ -2,24 +2,25 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton 
 from info import CHNL_LNK
 import requests 
+from xml.etree import ElementTree as ET
 
-API_URL = "https://api.lyrics.ovh/v1"
+import os
+
+
+API_URL = "http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect"
 
 @Client.on_message(filters.text & filters.command(["lyrics"]))
 async def sng(bot, message):
-    vj = await bot.ask(chat_id=message.from_user.id, text="Now send me the artist and song name in the format:\n`Artist - Song Title`")
+    # Ask user for the song name
+    vj = await bot.ask(chat_id=message.from_user.id, text="Now send me the song name.")
     if vj.text:
         mee = await vj.reply_text("`Searching 🔎`")
-        input_text = vj.text.strip()
+        song = vj.text.strip()
         chat_id = message.from_user.id
 
         try:
-            # Extract artist and song title
-            if " - " not in input_text:
-                raise ValueError("Invalid format. Use `Artist - Song Title`.")
-
-            artist, song = map(str.strip, input_text.split(" - ", 1))
-            rpl = fetch_lyrics(artist, song)
+            # Fetch lyrics using the song name
+            rpl = fetch_lyrics(song)
 
             await mee.delete()
             await bot.send_message(
@@ -31,25 +32,36 @@ async def sng(bot, message):
         except Exception as e:
             await mee.delete()
             await vj.reply_text(
-                f"I couldn't find lyrics for `{input_text}`.\n\nError: {str(e)}",
+                f"I couldn't find lyrics for `{song}`.\n\nError: {str(e)}",
                 quote=True,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇꜱ", url=CHNL_LNK)]])
             )
     else:
         await vj.reply_text("Send me only text Buddy.")
 
-def fetch_lyrics(artist, song):
+def fetch_lyrics(song):
     """
-    Fetch lyrics from the Lyrics.ovh API.
+    Fetch lyrics from the ChartLyrics API using only the song name.
     """
-    response = requests.get(f"https://api.lyrics.ovh/v1/{artist}/{song}")
+    params = {
+        "artist": "",  # Empty since we're only using the song name
+        "song": song
+    }
+    response = requests.get(API_URL, params=params)
     if response.status_code != 200:
-        raise ValueError("Lyrics not found. Please check the artist and song title.")
+        raise ValueError("Lyrics not found. Please check the song title.")
 
-    data = response.json()
-    lyrics = data.get("lyrics", None)
-    if not lyrics:
-        raise ValueError("Lyrics not found in the response.")
+    # Parse XML response
+    root = ET.fromstring(response.content)
+    lyrics = root.find(".//Lyric")
+    if lyrics is None or not lyrics.text:
+        raise ValueError("Lyrics not found.")
+
+    return (
+        f"**🎶 Successfully Found Lyrics for {song}:**\n\n"
+        f"`{lyrics.text}`\n\n"
+        "**Made By Artificial Intelligence**"
+    )
 
     return (
         f"**🎶 Successfully Found Lyrics for {song} by {artist}:**\n\n"

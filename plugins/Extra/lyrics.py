@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton 
 from info import CHNL_LNK
+from bs4 import BeautifulSoup
 import requests 
 import os
 
@@ -17,13 +18,15 @@ async def sng(bot, message):
         chat_id = message.from_user.id
 
         try:
-            # Fetch lyrics and song URL using the song name
-            rpl, song_url = fetch_lyrics_and_url(song)
+            # Fetch lyrics, song URL, and artist image using the song name
+            rpl, song_url, artist_image = fetch_lyrics_and_url(song)
 
             await mee.delete()
-            await bot.send_message(
+            # Send the artist's photo
+            await bot.send_photo(
                 chat_id,
-                text=rpl,
+                photo=artist_image,
+                caption=rpl,
                 reply_to_message_id=message.id,
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -44,7 +47,7 @@ async def sng(bot, message):
 
 def fetch_lyrics_and_url(song):
     """
-    Fetch lyrics and the Genius URL using the song name.
+    Fetch lyrics, Genius URL, and artist image using the song name.
     """
     headers = {"Authorization": f"Bearer {GENIUS_API_KEY}"}
     params = {"q": song}
@@ -62,6 +65,7 @@ def fetch_lyrics_and_url(song):
     song_title = song_data["title"]
     song_artist = song_data["primary_artist"]["name"]
     song_url = song_data["url"]
+    artist_image = song_data["primary_artist"]["image_url"]
 
     # Fetch lyrics from the song page
     lyrics = fetch_lyrics_from_url(song_url)
@@ -75,15 +79,25 @@ def fetch_lyrics_and_url(song):
         f"`{lyrics.strip()}`\n\n"
         "**Made By Artificial Intelligence**",
         song_url,
+        artist_image,
     )
 
 def fetch_lyrics_from_url(url):
     """
-    Fetch lyrics directly from the Genius song page.
+    Fetch lyrics directly from the Genius song page using BeautifulSoup.
     """
-    # You can use libraries like BeautifulSoup to scrape lyrics from the Genius page.
-    # Here is a simplified placeholder for demonstration.
-    # Replace this with scraping logic if needed.
-    return "This is a placeholder for lyrics. Add scraping logic to fetch actual lyrics."
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise ValueError("Failed to fetch lyrics page.")
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    lyrics_div = soup.find("div", class_="Lyrics__Container-sc-1ynbvzw-6")
+    if not lyrics_div:
+        raise ValueError("Lyrics not found on the page.")
+
+    # Extract text and clean up
+    lyrics = "\n".join([line.get_text(separator="\n") for line in lyrics_div.find_all("p")])
+    return lyrics.strip()
+
 
 

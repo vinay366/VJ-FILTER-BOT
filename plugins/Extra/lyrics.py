@@ -2,26 +2,23 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton 
 from info import CHNL_LNK
 import requests 
-from xml.etree import ElementTree as ET
 
 import os
 
-
-API_URL = "http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect"
+GENIUS_API_KEY = "VNcYSYtcNHWiE8TuUF3E6LqiwqtEZeBUmMvcj5En7UzX-xx-MZZOerYpzEoHbMsA"  # Replace with your Genius API key
+GENIUS_API_URL = "https://api.genius.com/search"
 
 @Client.on_message(filters.text & filters.command(["lyrics"]))
 async def sng(bot, message):
-    # Ask user for the song name
-    vj = await bot.ask(chat_id=message.from_user.id, text="Now send me the song name.")
+    vj = await bot.ask(chat_id=message.from_user.id, text="Now send me your song name.")
     if vj.text:
         mee = await vj.reply_text("`Searching 🔎`")
         song = vj.text.strip()
         chat_id = message.from_user.id
 
         try:
-            # Fetch lyrics using the song name
-            rpl = fetch_lyrics(song)
-
+            # Fetch full lyrics
+            rpl = lyrics(song)
             await mee.delete()
             await bot.send_message(
                 chat_id,
@@ -32,33 +29,68 @@ async def sng(bot, message):
         except Exception as e:
             await mee.delete()
             await vj.reply_text(
-                f"I couldn't find lyrics for `{song}`.\n\nError: {str(e)}",
+                f"I couldn't find lyrics for `{song}`.",
                 quote=True,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇꜱ", url=CHNL_LNK)]])
             )
     else:
         await vj.reply_text("Send me only text Buddy.")
 
-def fetch_lyrics(song):
+def search(song):
     """
-    Fetch lyrics from the ChartLyrics API using only the song name.
+    Search for the song using the Genius API.
     """
-    params = {
-        "artist": "",  # Empty since we're only using the song name
-        "song": song
-    }
-    response = requests.get(API_URL, params=params)
-    if response.status_code != 200:
-        raise ValueError("Lyrics not found. Please check the song title.")
+    headers = {"Authorization": f"Bearer {GENIUS_API_KEY}"}
+    params = {"q": song}
+    response = requests.get(GENIUS_API_URL, headers=headers, params=params)
+    response.raise_for_status()
+    return response.json()
 
-    # Parse XML response
-    root = ET.fromstring(response.content)
-    lyrics = root.find(".//Lyric")
-    if lyrics is None or not lyrics.text:
-        raise ValueError("Lyrics not found.")
+def fetch_lyrics_url(song):
+    """
+    Extract the Genius URL for the song.
+    """
+    data = search(song)
+    hits = data.get("response", {}).get("hits", [])
+
+    if not hits:
+        raise ValueError("No results found.")
+
+    # Extract details of the first result
+    song_info = hits[0].get("result", {})
+    song_url = song_info.get("url", "")
+
+    if not song_url:
+        raise ValueError("No URL found for the song.")
+
+    return song_url
+
+def scrape_lyrics(song_url):
+    """
+    Scrape the lyrics text from the Genius song page.
+    """
+    response = requests.get(song_url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Find the lyrics container
+    lyrics_div = soup.find("div", class_="Lyrics__Container-sc-1ynbvzw-6")
+    if not lyrics_div:
+        raise ValueError("Couldn't extract lyrics from the page.")
+
+    # Extract and clean up the lyrics text
+    lyrics = "\n".join([line.get_text(separator="\n") for line in lyrics_div.find_all("p")])
+    return lyrics.strip()
+
+def lyrics(song):
+    """
+    Get full lyrics text by scraping Genius page.
+    """
+    song_url = fetch_lyrics_url(song)
+    full_lyrics = scrape_lyrics(song_url)
 
     return (
         f"**🎶 Successfully Found Lyrics for {song}:**\n\n"
-        f"`{lyrics.text}`\n\n"
+        f"`{full_lyrics}`\n\n"
         "**Made By Artificial Intelligence**"
     )

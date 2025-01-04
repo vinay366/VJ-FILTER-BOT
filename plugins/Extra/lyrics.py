@@ -42,7 +42,7 @@ def fetch_lyrics(artist, song):
     """
     Fetch lyrics from the Lyrics.ovh API.
     """
-    response = requests.get(f"{API_URL}/{artist}/{song}")
+    response = requests.get(f"https://api.lyrics.ovh/v1/{artist}/{song}")
     if response.status_code != 200:
         raise ValueError("Lyrics not found. Please check the artist and song title.")
 
@@ -51,7 +51,8 @@ def fetch_lyrics(artist, song):
     if not lyrics:
         raise ValueError("Lyrics not found in the response.")
 
-    return f"**🎶 Successfully Found Lyrics for {song} by {artist}:**\n\n`{lyrics}`\n\n**Made By Artificial Intelligence**"
-
+    return (
+        f"**🎶 Successfully Found Lyrics for {song} by {artist}:**\n\n"
+        f"`{lyrics}`\n\n"
         "**Made By Artificial Intelligence**"
     )

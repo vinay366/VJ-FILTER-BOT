@@ -1,106 +1,71 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
-import requests
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from info import CHNL_LNK
+import requests
 import os
 
-API_URL = "https://api.genius.com/search"
-GENIUS_API_KEY = "ZSXjn8OAKM669PrE2Lo1QjZC5dFd3j3K5AbZ4kAHex3sIH_rWvwTv6PhXlAY9iqh"
+from info import CHNL_LNK  # Ensure CHNL_LNK is defined in the info module
 
-# Configure Selenium WebDriver
-options = Options()
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-driver_service = Service('/path/to/chromedriver')  # Replace with the path to your ChromeDriver
+GENIUS_API_KEY = "VAFbg5jQr-dBB3zPO_fq2x6hxxQh3aJjCim2ti6IF0ixOgunSwyHCjT7b4yXt3oq"  # Replace with your Genius API key
+GENIUS_API_URL = "https://api.genius.com/search"
 
 @Client.on_message(filters.text & filters.command(["lyrics"]))
 async def sng(bot, message):
-    vj = await bot.ask(chat_id=message.from_user.id, text="Now send me the song name.")
+    vj = await bot.ask(chat_id=message.from_user.id, text="Now send me your song name.")
     if vj.text:
         mee = await vj.reply_text("`Searching 🔎`")
         song = vj.text.strip()
         chat_id = message.from_user.id
-
         try:
-            # Fetch lyrics, song URL, and artist image using the song name
-            rpl, song_url, artist_image = fetch_lyrics_and_url(song)
-
+            rpl, artist_image = lyrics(song)
             await mee.delete()
-            # Send the artist's photo
             await bot.send_photo(
                 chat_id,
                 photo=artist_image,
                 caption=rpl,
                 reply_to_message_id=message.id,
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [InlineKeyboardButton("🎵 View Song on Genius", url=song_url)],
-                        [InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇꜱ", url=CHNL_LNK)],
-                    ]
-                ),
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇꜱ", url=CHNL_LNK)]])
             )
         except Exception as e:
             await mee.delete()
             await vj.reply_text(
-                f"I couldn't find lyrics for `{song}`.\n\nError: {str(e)}",
+                f"I couldn't find lyrics for `{song}`.\n\nError: {e}",
                 quote=True,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇꜱ", url=CHNL_LNK)]])
             )
     else:
         await vj.reply_text("Send me only text Buddy.")
 
-def fetch_lyrics_and_url(song):
+def search(song):
+    """
+    Search for the song using the Genius API.
+    """
     headers = {"Authorization": f"Bearer {GENIUS_API_KEY}"}
     params = {"q": song}
-    response = requests.get(API_URL, headers=headers, params=params)
-    if response.status_code != 200:
-        raise ValueError("Lyrics not found. Please check the song title.")
+    response = requests.get(GENIUS_API_URL, headers=headers, params=params)
+    response.raise_for_status()
+    return response.json()
 
-    data = response.json()
+def lyrics(song):
+    """
+    Extract lyrics details and artist image from the Genius API response.
+    """
+    data = search(song)
     hits = data.get("response", {}).get("hits", [])
+
     if not hits:
-        raise ValueError("Lyrics not found.")
+        raise ValueError("No results found.")
 
-    # Get the first result
-    song_data = hits[0]["result"]
-    song_title = song_data["title"]
-    song_artist = song_data["primary_artist"]["name"]
-    song_url = song_data["url"]
-    artist_image = song_data["primary_artist"]["image_url"]
+    # Extract details of the first result
+    song_info = hits[0].get("result", {})
+    song_title = song_info.get("title", "Unknown Title")
+    song_artist = song_info.get("primary_artist", {}).get("name", "Unknown Artist")
+    song_url = song_info.get("url", "")
+    artist_image = song_info.get("primary_artist", {}).get("image_url", "")
 
-    # Fetch lyrics from the song page
-    lyrics = fetch_lyrics_from_url_with_selenium(song_url)
-    if not lyrics:
-        raise ValueError("Lyrics not found.")
-
-    return (
-        f"**🎶 Successfully Found Lyrics:**\n\n"
-        f"**Song:** {song_title}\n"
-        f"**Artist:** {song_artist}\n\n"
-        f"`{lyrics.strip()}`\n\n"
-        "**Made By Artificial Intelligence**",
-        song_url,
-        artist_image,
+    response_text = (
+        f"**🎶 Successfully Found Lyrics for {song_title} by {song_artist}:**\n\n"
+        f"🔗 [View Full Lyrics]({song_url})\n\n"
+        "**Made By Artificial Intelligence**"
     )
 
-def fetch_lyrics_from_url_with_selenium(url):
-    """
-    Fetch lyrics using Selenium for JavaScript-rendered content.
-    """
-    driver = webdriver.Chrome(service=driver_service, options=options)
-    driver.get(url)
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    driver.quit()
-
-    lyrics_divs = soup.find_all("div", class_="Lyrics__Container-sc-1ynbvzw-6")
-    if not lyrics_divs:
-        raise ValueError("Lyrics not found on the page.")
-
-    lyrics = "\n".join([div.get_text(separator="\n").strip() for div in lyrics_divs])
-    return lyrics.strip()
+    return response_text, artist_image

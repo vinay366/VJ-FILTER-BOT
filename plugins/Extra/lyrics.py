@@ -1,7 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
-import os
 
 from info import CHNL_LNK  # Ensure CHNL_LNK is defined in the info module
 
@@ -15,20 +14,20 @@ async def sng(bot, message):
         mee = await vj.reply_text("`Searching 🔎`")
         song = vj.text.strip()
         chat_id = message.from_user.id
+        rpl = lyrics(song)
+
         try:
-            rpl, artist_image = lyrics(song)
             await mee.delete()
-            await bot.send_photo(
+            await bot.send_message(
                 chat_id,
-                photo=artist_image,
-                caption=rpl,
+                text=rpl,
                 reply_to_message_id=message.id,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇꜱ", url=CHNL_LNK)]])
             )
         except Exception as e:
             await mee.delete()
             await vj.reply_text(
-                f"I couldn't find lyrics for `{song}`.\n\nError: {e}",
+                f"I couldn't find lyrics for `{song}`.",
                 quote=True,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇꜱ", url=CHNL_LNK)]])
             )
@@ -47,7 +46,7 @@ def search(song):
 
 def lyrics(song):
     """
-    Extract lyrics details and artist image from the Genius API response.
+    Extract lyrics details from the Genius API response.
     """
     data = search(song)
     hits = data.get("response", {}).get("hits", [])
@@ -60,12 +59,9 @@ def lyrics(song):
     song_title = song_info.get("title", "Unknown Title")
     song_artist = song_info.get("primary_artist", {}).get("name", "Unknown Artist")
     song_url = song_info.get("url", "")
-    artist_image = song_info.get("primary_artist", {}).get("image_url", "")
 
-    response_text = (
+    return (
         f"**🎶 Successfully Found Lyrics for {song_title} by {song_artist}:**\n\n"
         f"🔗 [View Full Lyrics]({song_url})\n\n"
         "**Made By Artificial Intelligence**"
     )
-
-    return response_text, artist_image

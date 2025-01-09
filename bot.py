@@ -31,15 +31,14 @@ from TechVJ.bot.clients import initialize_clients
 ppath = "plugins/*.py"
 files = glob.glob(ppath)
 TechVJBot.start()
+loop = asyncio.get_event_loop()
 
 
 async def start():
     print('\n')
-    print('Initializing Your Bot')
+    print('Initalizing Your Bot')
     bot_info = await TechVJBot.get_me()
     await initialize_clients()
-    
-    # Load and initialize plugins dynamically
     for name in files:
         with open(name) as a:
             patt = Path(a.name)
@@ -50,71 +49,51 @@ async def start():
             load = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(load)
             sys.modules["plugins." + plugin_name] = load
-            print(f"Tech VJ Imported => {plugin_name}")
-    
-    # Ping server if on Heroku
+            print("Tech VJ Imported => " + plugin_name)
     if ON_HEROKU:
         asyncio.create_task(ping_server())
-    
-    # Load banned users and chats from database
     b_users, b_chats = await db.get_banned()
     temp.BANNED_USERS = b_users
     temp.BANNED_CHATS = b_chats
-    
-    # Set bot information in the global context
     me = await TechVJBot.get_me()
     temp.BOT = TechVJBot
     temp.ME = me.id
     temp.U_NAME = me.username
     temp.B_NAME = me.first_name
     logging.info(script.LOGO)
-    
-    # Get current time and date in Asia/Kolkata timezone
     tz = pytz.timezone('Asia/Kolkata')
     today = date.today()
     now = datetime.now(tz)
     time = now.strftime("%H:%M:%S %p")
-    
-    # Send restart message to the log channel
     try:
         await TechVJBot.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
     except:
         print("Make Your Bot Admin In Log Channel With Full Rights")
-    
-    # Send bot restart message to the channels
     for ch in CHANNELS:
         try:
             k = await TechVJBot.send_message(chat_id=ch, text="**Bot Restarted**")
             await k.delete()
         except:
             print("Make Your Bot Admin In File Channels With Full Rights")
-    
-    # Send restart message to the force subscribe channel
     try:
         k = await TechVJBot.send_message(chat_id=AUTH_CHANNEL, text="**Bot Restarted**")
         await k.delete()
     except:
         print("Make Your Bot Admin In Force Subscribe Channel With Full Rights")
-    
-    # Restart clone bots if needed
-    if CLONE_MODE:
+    if CLONE_MODE == True:
         print("Restarting All Clone Bots.......")
         await restart_bots()
         print("Restarted All Clone Bots.")
-    
-    # Setup the web server
     app = web.AppRunner(await web_server())
     await app.setup()
     bind_address = "0.0.0.0"
     await web.TCPSite(app, bind_address, PORT).start()
-    
-    # Keep the bot idle
     await idle()
 
 
 if __name__ == '__main__':
     try:
-        # Use asyncio.run() to manage the event loop
-        asyncio.run(start())
+        loop.run_until_complete(start())
     except KeyboardInterrupt:
         logging.info('Service Stopped Bye 👋')
+

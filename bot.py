@@ -30,10 +30,8 @@ from TechVJ.bot.clients import initialize_clients
 
 ppath = "plugins/*.py"
 files = glob.glob(ppath)
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(TechVJBot.start())
-
+TechVJBot.start()
+loop = asyncio.new_event_loop()
 
 
 

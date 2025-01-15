@@ -17,11 +17,12 @@ from utils import get_settings, save_group_settings
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-
+# First Database For File Saving 
 client = MongoClient(FILE_DB_URI)
 db = client[DATABASE_NAME]
 col = db[COLLECTION_NAME]
 
+# Second Database For File Saving
 sec_client = MongoClient(SEC_FILE_DB_URI)
 sec_db = sec_client[DATABASE_NAME]
 sec_col = sec_db[COLLECTION_NAME]
@@ -30,9 +31,9 @@ sec_col = sec_db[COLLECTION_NAME]
 async def save_file(media):
     """Save file in database"""
 
-    file_id, file_ref = unpack_new_file_id(media.file_id)
+    file_id = unpack_new_file_id(media.file_id)
     file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name)) 
-    unwanted_chars = ['[', ']', '(', ')']
+    unwanted_chars = ['[', ']', '(', ')', '{', '}']
     for char in unwanted_chars:
         file_name = file_name.replace(char, '')
     file_name = ' '.join(filter(lambda x: not x.startswith('@'), file_name.split()))
@@ -90,20 +91,7 @@ async def save_file(media):
 
 async def get_search_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset)"""
-    if chat_id is not None:
-        settings = await get_settings(int(chat_id))
-        try:
-            if settings['max_btn']:
-                max_results = 10
-            else:
-                max_results = int(MAX_B_TN)
-        except KeyError:
-            await save_group_settings(int(chat_id), 'max_btn', False)
-            settings = await get_settings(int(chat_id))
-            if settings['max_btn']:
-                max_results = 10
-            else:
-                max_results = int(MAX_B_TN)
+    
     query = query.strip()
     if not query:
         raw_pattern = '.'
@@ -203,7 +191,6 @@ async def get_file_details(query):
         filedetails = sec_col.find_one(filter)
     return filedetails
 
-
 def encode_file_id(s: bytes) -> str:
     r = b""
     n = 0
@@ -220,11 +207,6 @@ def encode_file_id(s: bytes) -> str:
 
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
-
-def encode_file_ref(file_ref: bytes) -> str:
-    return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
-
-
 def unpack_new_file_id(new_file_id):
     """Return file_id, file_ref"""
     decoded = FileId.decode(new_file_id)
@@ -237,5 +219,4 @@ def unpack_new_file_id(new_file_id):
             decoded.access_hash
         )
     )
-    file_ref = encode_file_ref(decoded.file_reference)
-    return file_id, file_ref
+    return file_id

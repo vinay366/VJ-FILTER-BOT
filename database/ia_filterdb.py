@@ -2,20 +2,12 @@
 # Subscribe YouTube Channel For Amazing Bot @Tech_VJ
 # Ask Doubt on telegram @KingVJ01
 
-import logging
+import re, base64, json
 from struct import pack
-import re
-import base64
-import json
-from datetime import datetime
 from pyrogram.file_id import FileId
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from info import FILE_DB_URI, SEC_FILE_DB_URI, DATABASE_NAME, COLLECTION_NAME, MULTIPLE_DATABASE, USE_CAPTION_FILTER, MAX_B_TN
-from utils import get_settings, save_group_settings
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 # First Database For File Saving 
 client = MongoClient(FILE_DB_URI)
@@ -41,13 +33,13 @@ async def save_file(media):
         'caption': media.caption.html if media.caption else None
     }
 
-    if await is_file_already_saved(file_id, file_name):
+    if is_file_already_saved(file_id, file_name):
         return False, 0
 
     collection_to_use = col if not MULTIPLE_DATABASE else select_collection_based_on_size(file)
 
     try:
-        await collection_to_use.insert_one(file)
+        collection_to_use.insert_one(file)
         print(f"{file_name} is successfully saved.")
         return True, 1
     except DuplicateKeyError:
@@ -64,7 +56,7 @@ def clean_file_name(file_name):
         
     return ' '.join(filter(lambda x: not x.startswith('@') and not x.startswith('http') and not x.startswith('www.') and not x.startswith('t.me'), file_name.split()))
 
-async def is_file_already_saved(file_id, file_name):
+def is_file_already_saved(file_id, file_name):
     """Check if the file is already saved in either collection."""
     found1 = {'file_name': file_name}
     found = {'file_id': file_id}
@@ -76,7 +68,7 @@ async def is_file_already_saved(file_id, file_name):
             
     return False
 
-async def select_collection_based_on_size(file):
+def select_collection_based_on_size(file):
     """Select the appropriate collection based on database size."""
     result = db.command('dbstats')
     

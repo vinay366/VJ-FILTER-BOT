@@ -48,7 +48,7 @@ async def save_file(media):
 
 def clean_file_name(file_name):
     """Clean and format the file name."""
-    file_name = re.sub(r"(_|-|.|+)", " ", str(file_name)) 
+    file_name = re.sub(r"(_|\-|\.|\+)", " ", str(file_name)) 
     unwanted_chars = ['[', ']', '(', ')', '{', '}']
     
     for char in unwanted_chars:
@@ -102,14 +102,14 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
         cursor1 = col.find(filter).sort('$natural', -1).skip(offset).limit(max_results)
         cursor2 = sec_col.find(filter).sort('$natural', -1).skip(offset).limit(max_results)
         
-        async for file in cursor1:
+        for file in cursor1:
             files.append(file)
-        async for file in cursor2:
+        for file in cursor2:
             files.append(file)
     else:
         cursor = col.find(filter).sort('$natural', -1).skip(offset).limit(max_results)
         
-        async for file in cursor:
+        for file in cursor:
             files.append(file)
 
     total_results = col.count_documents(filter) if not MULTIPLE_DATABASE else (col.count_documents(filter) + sec_col.count_documents(filter))

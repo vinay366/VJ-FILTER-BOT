@@ -1,8 +1,7 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
-
+       Tech_VJ
+import logging
 import re, base64, json
+       Tech_VJ
 from struct import pack
 from pyrogram.file_id import FileId
 from pymongo import MongoClient

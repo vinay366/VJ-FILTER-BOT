@@ -467,7 +467,7 @@ async def start(client, message):
         is_valid = await check_token(client, userid, token)
         if is_valid == True:
             await message.reply_text(
-                text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.</b>",
+                text=f"<b>Hey {message.from_user.mention}, You are successfully verified ! Now you have unlimited VIP ✨ access all movies till today midnight.\n\nNow go back to your group and search again get your movies in files ✅ 💞.</b>",
                 protect_content=True
             )
             await verify_user(client, userid, token)
@@ -539,7 +539,7 @@ async def start(client, message):
                         InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
                     ]]
                     await message.reply_text(
-                        text="<b>You are not verified !\nKindly verify to continue !</b>",
+                        text="<b>You are not verified today ! Please verify and get unlimited (VIP) Access For Next 24 Hours.💖\n\nइस बोट का इस्तेमाल करने के लिये आपको VERIFY करना होगा. नही तो आप इसका इस्तेमाल नहीं कर पायेंगे | Verify करने के बाद 24 घंटे के लिये आप इस बोट का इस्तेमाल कर सकते हैं|💕</b>",
                         protect_content=True,
                         reply_markup=InlineKeyboardMarkup(btn)
                     )

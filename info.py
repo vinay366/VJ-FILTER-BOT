@@ -127,7 +127,7 @@ VERIFY_SND_SHORTLINK_API = environ.get('VERIFY_SND_SHORTLINK_API', '')
 # Shortlink Info
 SHORTLINK_MODE = bool(environ.get('SHORTLINK_MODE', True)) # Set True Or False
 SHORTLINK_URL = environ.get('SHORTLINK_URL', 'onepageyam.com')
-SHORTLINK_API = environ.get('SHORTLINK_API', '00eec535be25d87a1d96244502b2d1ec7498f6b0'')
+SHORTLINK_API = environ.get('SHORTLINK_API', '00eec535be25d87a1d96244502b2d1ec7498f6b0')
 TUTORIAL = environ.get('TUTORIAL', 'https://t.me/Sr_Movie_Links/46') # How Open Shortner Link Video Link , Channel Link Where You Upload Your Video.
 
 
